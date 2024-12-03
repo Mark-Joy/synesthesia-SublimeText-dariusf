@@ -7,11 +7,14 @@ from .colourful import string_to_colour, random_colour, string_to_dark_colour, c
 PATH_SEPARATOR = "\\" if sublime.platform() == "windows" else "/"
 
 def plugin_loaded():
-    global PACKAGES_PATH, SYNESTHESIA_INCLUDE_PATH, SYNESTHESIA_OUTPUT_PATH, SYNESTHESIA_OUTPUT_PATH_RELATIVE
+    global PACKAGES_PATH, SYNESTHESIA_INCLUDE_PATH, SYNESTHESIA_INCLUDE_PATH_RELATIVE, SYNESTHESIA_OUTPUT_PATH, SYNESTHESIA_OUTPUT_PATH_RELATIVE
     PACKAGES_PATH = sublime.packages_path()
-    SYNESTHESIA_INCLUDE_PATH = "Packages/synesthesia/include/"
-    SYNESTHESIA_OUTPUT_PATH = os.path.join(sublime.packages_path(), "User")
-    SYNESTHESIA_OUTPUT_PATH_RELATIVE = "Packages/User"
+    __SYNESTHESIA_INCLUDE_PATH = "User/Synesthesia/include/"
+    __SYNESTHESIA_SYNTAXES_PATH = "Synesthesia-Syntaxes"
+    SYNESTHESIA_INCLUDE_PATH = os.path.join(sublime.packages_path(), __SYNESTHESIA_INCLUDE_PATH)
+    SYNESTHESIA_INCLUDE_PATH_RELATIVE = "Packages/" + __SYNESTHESIA_INCLUDE_PATH
+    SYNESTHESIA_OUTPUT_PATH = os.path.join(sublime.packages_path(), __SYNESTHESIA_SYNTAXES_PATH)
+    SYNESTHESIA_OUTPUT_PATH_RELATIVE = "Packages/" + __SYNESTHESIA_SYNTAXES_PATH
 
 def write_file(filepath, s):
     f = open(filepath, 'w')
@@ -39,7 +42,11 @@ def ensure_directory_exists(path):
         os.makedirs(path)
 
 def read_default_settings(view):
-    colour_scheme_path = re.sub("Packages", sublime.packages_path(), view.settings().get('color_scheme'))
+    if sublime.platform() == "windows":
+        # Prevent regex error: [re.error: invalid group reference x] if there's [\x] characters in the path
+        colour_scheme_path = re.sub("^Packages", sublime.packages_path().replace('\\', '/'), view.settings().get('color_scheme'))
+    else:
+        colour_scheme_path = re.sub("^Packages", sublime.packages_path(), view.settings().get('color_scheme'))
 
     if (os.path.exists(colour_scheme_path)):
         settings_block = re.compile(r"[ \t]+<dict>\s+<key>settings</key>[\s\w></#]+</dict>")
@@ -69,7 +76,7 @@ def load_json_data(source, path=True):
 
 def get_include_contents():
     ''' Returns the contents of the include directory, abstracting away differences between directory and .sublime_package format '''
-    include = re.compile(SYNESTHESIA_INCLUDE_PATH)
+    include = re.compile(SYNESTHESIA_INCLUDE_PATH_RELATIVE)
     # Get json file names in include directory
     files = [include.sub('', x) for x in sublime.find_resources('*.json') if include.search(x) is not None]
     # Strip extension
@@ -268,10 +275,10 @@ class HighlightingScheme():
                     if entries is not None:
                         print("Found!")
                     else:
-                        print("Looking in %s..." % (SYNESTHESIA_INCLUDE_PATH), end=' ')
+                        print("Looking in %s..." % (SYNESTHESIA_INCLUDE_PATH_RELATIVE), end=' ')
                         if i in in_include_directory:
                             print("Found!")
-                            _, entries = load_json_data(sublime.load_resource(os.path.join(SYNESTHESIA_INCLUDE_PATH, i + '.json')), False)
+                            _, entries = load_json_data(sublime.load_resource(os.path.join(SYNESTHESIA_INCLUDE_PATH_RELATIVE, i + '.json')), False)
                         else:
                             print("Could not find %s." % (i))
 

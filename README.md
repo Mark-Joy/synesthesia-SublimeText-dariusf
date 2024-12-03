@@ -17,6 +17,10 @@ Getting Started
 - Select **Compile Highlighting Scheme** from the Command Palette.
 - Select `Set Syntax: Hello World` from the Command Palette. Voila!
 - To change keywords or colours, simply compile again.
+- The compiled-output-files are stored in `Packages/Synesthesia-Syntaxes` which:
+    + Withstand the removal of `Synesthesia` package
+    + Can be removed using `Package Control` under the name `Synesthesia-Syntaxes`
+    + `*.sublime-settings` (output) files can be automatically read by `SublimeText`
 
 Functionality
 -------------
@@ -100,11 +104,12 @@ That's where this option comes in. Highlighting schemes can be *mixed into other
 ```
 
 This will cause the keywords and colours in `LightMarkdown.json` to be copied into the current scheme on compile.
+`LightMarkdown.json` is an example file presented in `Packages/Synesthesia/include`. You may wish to copy it to `Packages/User/Synesthesia/include`
 
 Here's how Synesthesia will search for schemes to mix in:
 
 - The directory that the current scheme is in will first be checked for the mixins specified.
-- If a mixin can't be found there, `Packages/synesthesia/include` will be checked next.
+- If a mixin can't be found there, `Packages/User/Synesthesia/include` will be checked next.
 - Dependencies will be resolved recursively, depth-first, in the order they are specified. Circular dependencies are prevented.
 - If a keyword has appeared before, it won't be overridden should it appear again in a later-loaded dependency.
 
