@@ -1,8 +1,7 @@
 import re, uuid, os.path, json, plistlib
 import sublime, sublime_plugin
 from . import templates
-from . import colours
-from .colourful import string_to_colour, random_colour, string_to_dark_colour, cyclic_colours
+from .color import *
 
 PATH_SEPARATOR = "\\" if sublime.platform() == "windows" else "/"
 
@@ -44,17 +43,17 @@ def ensure_directory_exists(path):
 def read_default_settings(view):
     if sublime.platform() == "windows":
         # Prevent regex error: [re.error: invalid group reference x] if there's [\x] characters in the path
-        colour_scheme_path = re.sub("^Packages", sublime.packages_path().replace('\\', '/'), view.settings().get('color_scheme'))
+        color_scheme_path = re.sub("^Packages", sublime.packages_path().replace('\\', '/'), view.settings().get('color_scheme'))
     else:
-        colour_scheme_path = re.sub("^Packages", sublime.packages_path(), view.settings().get('color_scheme'))
+        color_scheme_path = re.sub("^Packages", sublime.packages_path(), view.settings().get('color_scheme'))
 
-    if (os.path.exists(colour_scheme_path)):
+    if (os.path.exists(color_scheme_path)):
         settings_block = re.compile(r"[ \t]+<dict>\s+<key>settings</key>[\s\w></#]+</dict>")
-        settings_text = read_file(colour_scheme_path)
+        settings_text = read_file(color_scheme_path)
         match = settings_block.search(settings_text)
         if match:
-            default_colours = match.group(0)
-            return default_colours
+            default_colors = match.group(0)
+            return default_colors
 
     return None
 
@@ -82,16 +81,16 @@ def get_include_contents():
     # Strip extension
     return [x[:-5] for x in files]
 
-def colour(key, c, dark=False):
+def color(key, c, dark=False):
     c = c.lower()
     if dark and c == "auto":
-        c = string_to_dark_colour(key)
+        c = string_to_dark_color(key)
     elif c == "random":
-        c = random_colour()
+        c = random_color()
     elif c == "auto":
-        c = string_to_colour(key)
-    elif c in colours.name_to_hex:
-        c = colours.name_to_hex[c]
+        c = string_to_color(key)
+    # elif c in name_to_hex:
+    #     c = name_to_hex[c]
     return c
 
 def first_valid_path(*paths):
@@ -114,9 +113,9 @@ class SynesthesiaCompileCommand(sublime_plugin.WindowCommand):
 
         hs = HighlightingScheme(directory, entries)
 
-        default_colours = read_default_settings(self.window.active_view())
-        if default_colours:
-            hs.default_colours = default_colours
+        default_colors = read_default_settings(self.window.active_view())
+        if default_colors:
+            hs.default_colors = default_colors
 
         hs.save(themename)
 
@@ -125,8 +124,8 @@ class Keyword():
 
     def __init__(self, regex, value):
 
-        self.colour = None
-        self.background_colour = None
+        self.color = None
+        self.background_color = None
         self.fontstyle = []
         self.whole_word = False # do i really need this after modifying the regex?
         self.case_insensitive = False # same for this one
@@ -134,13 +133,13 @@ class Keyword():
         self.regex = regex
 
         if type(value) == str:
-            self.colour = colour(regex, value)
+            self.color = color(regex, value)
         elif type(value) == dict:
-            if "colour" in value:
-                self.colour = colour(regex, value["colour"])
+            if "color" in value:
+                self.color = color(regex, value["color"])
             if "background" in value:
-                self.background_colour = colour(key, value["background"], True)
-            if "italics" in value and value["italics"]:
+                self.background_color = color(key, value["background"], True)
+            if "italic" in value and value["italic"]:
                 self.fontstyle.append("italic")
             if "bold" in value and value["bold"]:
                 self.fontstyle.append("bold")
@@ -206,7 +205,7 @@ def process_tmTheme(scheme_name, path, keywords):
         plist['settings'].append({
             'name': keyword.name,
             'scope': 'meta.other.%s.%s' % (scheme_name, keyword.name),
-            'settings': {'foreground': keyword.colour}
+            'settings': {'foreground': keyword.color}
         })
 
     path = os.path.join(SYNESTHESIA_OUTPUT_PATH, scheme_name + '.tmTheme')
@@ -231,12 +230,12 @@ class HighlightingScheme():
     A highlighting scheme consists of:
 
     - a syntax definition
-    - a colour theme
+    - a color theme
     - a settings file
 
     """
 
-    default_colours = templates.default_colours
+    default_colors = templates.default_colors
 
     def __init__(self, directory, data):
         self.directory = directory
@@ -305,12 +304,12 @@ class HighlightingScheme():
             if keyword not in keyword_map:
                 keyword_map[keyword] = "random"
 
-        cyclic = cyclic_colours(len(cyclic_keywords_list), cyclic_seed)
+        cyclic = cyclic_colors(len(cyclic_keywords_list), cyclic_seed)
         if not cyclic_seed:
-            print("Cyclic colours:", cyclic)
-        for keyword, colour in zip(cyclic_keywords_list, cyclic):
+            print("Cyclic colors:", cyclic)
+        for keyword, color in zip(cyclic_keywords_list, cyclic):
             if keyword not in keyword_map:
-                keyword_map[keyword] = colour
+                keyword_map[keyword] = color
 
         # generate syntax and theme files
         if "deriving" in self.data:
@@ -369,14 +368,14 @@ class HighlightingScheme():
             whole_word = False
 
             if type(value) == str:
-                options.append(templates.theme_element_foreground % colour(key, value))
+                options.append(templates.theme_element_foreground % color(key, value))
             elif type(value) == dict:
                 fontstyle = []
-                if "colour" in value:
-                    options.append(templates.theme_element_foreground % colour(key, value["colour"]))
+                if "color" in value:
+                    options.append(templates.theme_element_foreground % color(key, value["color"]))
                 if "background" in value:
-                    options.append(templates.theme_element_background % colour(key, value["background"], True))
-                if "italics" in value and value["italics"]:
+                    options.append(templates.theme_element_background % color(key, value["background"], True))
+                if "italic" in value and value["italic"]:
                     fontstyle.append("italic")
                 if "bold" in value and value["bold"]:
                     fontstyle.append("bold")
@@ -419,7 +418,7 @@ class HighlightingScheme():
         write_file(scope_filename, templates.scope % (scope_extensions, theme_name, keywords, "source" if autocompletion else "text", theme_name, uuid.uuid4()))
         # print(os.path.dirname(os.path.realpath(__file__)))
         print("Written to %s." % scope_filename)
-        write_file(theme_filename, templates.theme % (theme_name, self.default_colours, theme_scopes, uuid.uuid4()))
+        write_file(theme_filename, templates.theme % (theme_name, self.default_colors, theme_scopes, uuid.uuid4()))
         print("Written to %s." % theme_filename)
         write_file(settings_filename, templates.default_settings % (SYNESTHESIA_OUTPUT_PATH_RELATIVE, theme_name, settings_extensions, other_settings))
         print("Written to %s." % settings_filename)

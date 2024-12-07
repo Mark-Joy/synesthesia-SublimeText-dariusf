@@ -1,7 +1,7 @@
 Synesthesia
 ===========
 
-A Sublime Text 3 plugin for highlighting text with pretty colours.
+A Sublime Text 3 plugin for highlighting text with pretty colors.
 
 Installation
 ------------
@@ -16,7 +16,7 @@ Getting Started
 - Save the file as `Hello World.json`.
 - Select **Compile Highlighting Scheme** from the Command Palette.
 - Select `Set Syntax: Hello World` from the Command Palette. Voila!
-- To change keywords or colours, simply compile again.
+- To change keywords or colors, simply compile again.
 - The compiled-output-files are stored in `Packages/Synesthesia-Syntaxes` which:
     + Withstand the removal of `Synesthesia` package
     + Can be removed using `Package Control` under the name `Synesthesia-Syntaxes`
@@ -25,11 +25,11 @@ Getting Started
 Functionality
 -------------
 
-This plugin provides a quick and lightweight way to highlight text with different colours.
+This plugin provides a quick and lightweight way to highlight text with different colors.
 
 It takes a *highlighting scheme*, which is a description of words to highlight and how they should look, and generates all the necessary configuration files for Sublime to render them that way.
 
-This is essentially an abstraction for creating a language definition, but much easier to use: you don't have to deal with all that complexity if all you need is to bring attention to a few terms in your text, colour a log file, etc.
+This is essentially an abstraction for creating a language definition, but much easier to use: you don't have to deal with all that complexity if all you need is to bring attention to a few terms in your text, color a log file, etc.
 
 The rest of this readme thoroughly documents all the options you can use. You may also wish to browse the examples in `Packages/synesthesia/include`.
 
@@ -39,16 +39,16 @@ What should you use this plugin for?
 - **Ad-hoc highlighting of text.** This plugin is a quick and lightweight way to draw attention to important articles in your text. A few example uses:
 	+ Highlighting keywords in log files
 	+ Drawing attention to characters or locations in writing
-	+ Visualising colours (check out `Pretty.json`)
+	+ Visualising colors (check out `Pretty.json`)
 	+ Lightweight markup (check out [MarkdownEditing](https://github.com/SublimeText-Markdown/MarkdownEditing) for Markdown)
 	+ Quick-and-dirty way to add keywords to existing language definitions
 - *This plugin is not an easier way to specify syntax highlighting for a programming language.* A list of regular expressions isn't a great way to handle most programming languages. Making syntax highlighting easier is the niche [AAAPackageDev](https://github.com/SublimeText/AAAPackageDev) fills.
 
-### Colours
+### Colors
 
-Keyword colours are specified as RGB in hexadecimal form (`#rrggbb`). We can also use colour names, like `blue` or `red`; a list of these can be found [here](http://en.wikipedia.org/wiki/Web_colours#X11_color_names).
+Keyword colors are specified as RGB in hexadecimal form (`#rrggbb`). We can also use color names, like `blue` or `red`; a list of these can be found [here](http://en.wikipedia.org/wiki/Web_colors#X11_color_names).
 
-Two additional colour types are available: `random` and `auto`. `random` will give a random colour on every compile, while the colour that `auto` generates is fixed. Both will only generate nice bright colours.
+Two additional color types are available: `random` and `auto`. `random` will give a random color on every compile, while the color that `auto` generates is fixed. Both will only generate nice bright colors.
 
 ```js
 {
@@ -63,16 +63,16 @@ Two additional colour types are available: `random` and `auto`. `random` will gi
 
 ### Formatting and Options
 
-Options can be specified instead of a colour name or value:
+Options can be specified instead of a color name or value:
 
 ```js
 {
 	'keywords': {
 		'something': {
-			'colour': 'plum',
+			'color': 'plum',
 			'background': 'blue',
 			'bold': true,
-			'italics': true,
+			'italic': true,
 			'whole-word': true,
 			'case-insensitive': true
 		}
@@ -80,9 +80,9 @@ Options can be specified instead of a colour name or value:
 }
 ```
 
-- All fields are optional, including `colour`.
-- `background` controls the background colour of highlighted keywords. It's used the same way `colour` is.
-- `whole-word` will make sure only whole occurrences of keywords are matched. If set to true, the 'java' in 'javascript' won't be coloured.
+- All fields are optional, including `color`.
+- `background` controls the background color of highlighted keywords. It's used the same way `color` is.
+- `whole-word` will make sure only whole occurrences of keywords are matched. If set to true, the 'java' in 'javascript' won't be colored.
 
 ### Keywords
 
@@ -103,7 +103,7 @@ That's where this option comes in. Highlighting schemes can be *mixed into other
 }
 ```
 
-This will cause the keywords and colours in `LightMarkdown.json` to be copied into the current scheme on compile.
+This will cause the keywords and colors in `LightMarkdown.json` to be copied into the current scheme on compile.
 `LightMarkdown.json` is an example file presented in `Packages/Synesthesia/include`. You may wish to copy it to `Packages/User/Synesthesia/include`
 
 Here's how Synesthesia will search for schemes to mix in:
@@ -164,15 +164,15 @@ Inner Workings
 Compiling a highlighting scheme generates three files:
 
 - Language definition (`.tmLanguage`)
-- Colour theme (`.tmTheme`)
+- Color theme (`.tmTheme`)
 - Settings (`.sublime-settings`)
 
-The first two work in tandem, specifying a mini-language consisting of the user's keywords, along with a colour theme designed specifically for that mini-language. The settings file glues them together, causing Sublime Text to associate the theme with the mini-language. All this is done via Sublime Text's built-in mechanisms for syntax highlighting, so it's robust and stable.
+The first two work in tandem, specifying a mini-language consisting of the user's keywords, along with a color theme designed specifically for that mini-language. The settings file glues them together, causing Sublime Text to associate the theme with the mini-language. All this is done via Sublime Text's built-in mechanisms for syntax highlighting, so it's robust and stable.
 
-Other plugins for highlighting arbitrary words do so either via named regions or by mutating the current colour theme.
+Other plugins for highlighting arbitrary words do so either via named regions or by mutating the current color theme.
 
-- The first method doesn't interact well with live editing and is limited to only changing the background colour of text.
-- The second provides a slightly higher level of flexibility (for example, there may be no need to switch to a different language) but is much more complex implementation-wise. It also may not play nice with all language definitions and colour schemes.
+- The first method doesn't interact well with live editing and is limited to only changing the background color of text.
+- The second provides a slightly higher level of flexibility (for example, there may be no need to switch to a different language) but is much more complex implementation-wise. It also may not play nice with all language definitions and color schemes.
 
 The method used in this plugin, while static, is great for live editing and is much simpler to manage. Interactions with other language definitions are also made explicit. I see it as the middle ground between these approaches.
 

@@ -40,10 +40,10 @@ sample_file = """{
 		"hello world": "#ff0000",
 		"(color|colour) aliases": "plum",
 		"options are supported too": {
-			"colour": "plum",
+			"color": "plum",
 			"background": "blue",
 			"bold": true,
-			"italics": true,
+			"italic": true,
 			"whole-word": true,
 			"case-insensitive": true
 		}
@@ -51,7 +51,7 @@ sample_file = """{
 	}
 }"""
 
-default_colours = """
+default_colors = """
 		<dict>
 			<key>settings</key>
 			<dict>

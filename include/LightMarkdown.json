@@ -1,8 +1,8 @@
 {
 	"keywords": {
-		"^[-=*]{2,}$": {"bold": true, "colour": "red"},
+		"^[-=*]{2,}$": {"bold": true, "color": "red"},
 		"^\\s*#+ [^#]+#*$": {"bold": true},
 		"([*_]{2})(?:\\w|\\w[^*_]*\\w)\\1": {"bold": true},
-		"([*_])(?:\\w|\\w[^*_]*\\w)\\1": {"italics": true}
+		"([*_])(?:\\w|\\w[^*_]*\\w)\\1": {"italic": true}
 	}
 }
